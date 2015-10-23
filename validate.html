@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vulnerability Validator</title>
+    <!-- Adding Bootstrap -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <!-- Adding Custom JS file-->
+    <script src="validate.js"></script>
+</head>
+<body>
+    <div class="container">
+        <ul class="nav nav-tabs nav-justified">
+            <li class="active"><a data-toggle="pill" href="#step1">Step 1</a></li>
+            <li class=""><a data-toggle="pill" href="#step2">Step 2</a></li>
+            <li class=""><a data-toggle="pill" href="#step3">Step 3</a></li>
+            <li class=""><a data-toggle="pill" href="#step4">Step 4</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="step1" class="tab-pane fade in active">
+                <h3>Step 1</h3>
+                <div class="form-group">
+                    <label>Attack Request</label>
+                    <textarea rows="5" class="form-control">Attack Request Header(s)
+                    </textarea>
+                </div>
+                <div class="form-group">
+                    <label>View</label>
+                    <textarea rows="5" class="form-control">Show here tabular view or raw view
+                    </textarea>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 text-center">
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Select View
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Raw View</a></li>
+                                <li><a href="#">Tabular View</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-2 text-center">
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Protocol
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">http</a></li>
+                                <li><a href="#">https</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-8 text-center">
+                        <button type="button" class="btn btn-default">Proxy</button>
+                        <button type="button" class="btn btn-default">Edit Cookie</button>
+                        <button type="button" class="btn btn-default">Reset Request</button>
+                        <button type="button" class="btn btn-default">Send Request</button>
+                        <button type="button" class="btn btn-default">Compare</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Attack Response</label>
+                    <textarea rows="5" class="form-control">Show here the attack response
+                    </textarea>
+                </div>
+                <div class="form-group">
+                    <label>Content Response</label>
+                    <textarea rows="5" class="form-control">Show here the content of the response
+                    </textarea>
+                </div>
+                <button type="button" class="btn btn-default">Highlight Vulnerability</button>
+                <button type="button" class="btn btn-default">Show Response in a Browser</button>
+                <button type="button" class="btn btn-default">Help</button>
+            </div>
+            <div id="step2" class="tab-pane fade">
+                <h3>Step 2</h3>
+                <p>Contains all data for Step2</p>
+            </div>
+            <div id="step3" class="tab-pane fade">
+                <h3>Step 3</h3>
+                <p>Contains all data for Step3</p>
+            </div>
+            <div id="step4" class="tab-pane fade">
+                <h3>Step 4</h3>
+                <p>Contains all data for Step4</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
