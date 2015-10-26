@@ -88,15 +88,16 @@ var AppSpiderValidate = {
     parseHeader: function(requests) {
         var header = [];
         var arry_requests = requests.split(/(#H#G#F#E#D#C#B#A#)/);
-        for (var i = 0; i < arry_requests.length; i++ ) {
+        for (var i = 0; i < arry_requests.length + 1; i++ ) {
             var step = {};
             if (arry_requests[i].indexOf("#A#B#C#D#E#F#G#H#") > -1) {
                 var arry = arry_requests[i].split(/(#A#B#C#D#E#F#G#H#)/);
                 var request = arry[0].trim();
                 var desc = arry[arry.length -1].trim();
                 /* Debugging */
-                step['step' + i] = {
-                    step_num: "Step " + i,
+                var step_num = i + 1;
+                step['step' + step_num] = {
+                    step_num: "Step " + step_num,
                     attack_request_header: AppSpiderValidate.parseRequest(request)
                 };
                 header.push(step)
