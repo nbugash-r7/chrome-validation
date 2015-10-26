@@ -12,12 +12,13 @@ var attackRequestTemplate =
 var viewTemplate =
     "<div class='form-group'>" +
     "<label>View</label>" +
-    "<textarea rows='5' class='form-control'>{{data}}</textarea>" +
+    "<textarea rows='5' class='form-control'>{{view_data}}</textarea>" +
     "</div>";
 
 var headerButtonsTemplate =
+    "<div class='container-fluid'>" +
     "<div class='row'>" +
-    "<div class='col-md-2 text-center'>" +
+    "<div class='col-xs-2 text-center'>" +
     "<div class='dropdown'>" +
     "<button class='btn btn-primary dropdown-toggle' type='button' data-toggle='dropdown'>Select View" +
     "<span class='caret'></span>" +
@@ -28,7 +29,7 @@ var headerButtonsTemplate =
     "</ul>" +
     "</div>" +
     "</div>" +
-    "<div class='col-md-2 text-center'>" +
+    "<div class='col-xs-2 text-center'>" +
     "<div class='dropdown'>" +
     "<button class='btn btn-primary dropdown-toggle' type='button' data-toggle='dropdown'>Protocol" +
     "<span class='caret'></span>" +
@@ -39,12 +40,13 @@ var headerButtonsTemplate =
     "</ul>" +
     "</div>" +
     "</div>" +
-    "<div class='col-md-8 text-center'>" +
+    "<div class='col-xs-8 text-center'>" +
     "<button type='button' class='btn btn-default'>Proxy</button>" +
     "<button type='button' class='btn btn-default'>Edit Cookie</button>" +
     "<button type='button' class='btn btn-default'>Reset Request</button>" +
     "<button type='button' class='btn btn-default'>Send Request</button>" +
     "<button type='button' class='btn btn-default'>Compare</button>" +
+    "</div>" +
     "</div>" +
     "</div>";
 
@@ -68,41 +70,36 @@ var buttonTemplate =
     "<button type='button' class='btn btn-default'>Help</button>";
 
 var stepTemplate =
-    "<div id=\'{{step_num}}\' class='tab-pane fade'>" +
     "<h3>{{step_num}}</h3>" +
-    "<div id='attack-request-template'></div>" +
-    "<script>AppSpiderValidate.renderTemplate('attackRequestTemplate','attack-request-template', attackRequestData);</script>" +
-    "<div id='view-template'></div>" +
-    "<script>AppSpiderValidate.renderTemplate('viewTemplate','view-template',viewData);</script>" +
-    "<div id='header-buttons-template'></div>" +
-    "<script>AppSpiderValidate.renderTemplate('headerButtonsTemplate','header-button-template',null);</script>" +
-    "<div id='attack-response-template'></div>" +
-    "<script>AppSpiderValidate.renderTemplate('attackResponseTemplate','attack-response-template',attackResponseData);</script>" +
-    "<div id='content-response-template'></div>" +
-    "<script>AppSpiderValidate.renderTemplate('contentResponseTemplate','content-response-template',contentResponseData);</script>" +
-    "<div id='content-response-template'></div>" +
-    "<script>AppSpiderValidate.renderTemplate('contentResponseTemplate','content-response-template',contentResponseData);</script>" +
-    "<div id='button-template'></div>" +
-    "<script>AppSpiderValidate.renderTemplate('buttonTemplate','button-template');</script>" +
-    "</div>";
+    attackRequestTemplate +
+    viewTemplate +
+    headerButtonsTemplate +
+    attackResponseTemplate +
+    contentResponseTemplate +
+    buttonTemplate;
 
 var AppSpiderValidate = {
 
     decodeHeader: function(sHTTPHeader) {
-        var requests = window.atob(sHTTPHeader);
-        return parseHeader(requests);
+        var decodedHeader = window.atob(sHTTPHeader);
+        return decodedHeader;
     },
 
     parseHeader: function(requests) {
+        var header = [];
         var arry_requests = requests.split(/(#H#G#F#E#D#C#B#A#)/);
         for (var i = 0; i < arry_requests.length; i++ ) {
+            var step = {};
             if (arry_requests[i].indexOf("#A#B#C#D#E#F#G#H#") > -1) {
                 var arry = arry_requests[i].split(/(#A#B#C#D#E#F#G#H#)/);
                 var request = arry[0].trim();
                 var desc = arry[arry.length -1].trim();
                 /* Debugging */
-                return parseRequest(request);
-                //makeRequest(request);
+                step['step' + i] = {
+                    step_num: "Step " + i,
+                    attack_request_header: AppSpiderValidate.parseRequest(request)
+                };
+                header.push(step)
             }
         }
     },
@@ -127,24 +124,41 @@ var AppSpiderValidate = {
         }
     },
 
-    renderTemplate: function(template,tag,data) {
-        if (template == 'attackRequestTemplate') {
-            template = attackRequestTemplate;
-        }else if (template == 'viewTemplate') {
-            template = viewTemplate;
-        }else if (template == 'headerButtonsTemplate') {
-            template = headerButtonsTemplate;
-        }else if (template == 'attackResponseTemplate') {
-            template = attackResponseTemplate;
-        }else if (template == 'contentResponseTemplate') {
-            template = contentResponseTemplate;
-        }else if (template == 'buttonTemplate') {
-            template = buttonTemplate;
-        }else if (template == 'stepTemplate') {
+    renderTemplate: function(template,id_tag,data) {
+        if (template == 'stepTemplate') {
             template = stepTemplate;
         }
-        var output = Mustache.render(template,data);
-        document.getElementById(tag).innerHTML = output;
+        for (var step in data) {
+            var output = Mustache.to_html(template,data[step]);
+            var stephtml = document.getElementById(id_tag);
+            var div = document.createElement('div');
+            div.setAttribute('id', step);
+            if (step == 'step1') {
+                div.setAttribute('class','tab-pane fade in active');
+            } else {
+                div.setAttribute('class','tab-pane fade');
+            }
+            div.innerHTML = output;
+            stephtml.appendChild(div);
+        };
+    },
+    renderNavTemplate: function(data) {
+        var navhtml = document.getElementById('appspider-nav');
+        for (var step in data) {
+            var li = document.createElement('li');
+            if (step == 'step1') {
+                li.setAttribute('class','active');
+            } else {
+                li.setAttribute('class', '');
+            }
+            var a = document.createElement('a');
+            a.setAttribute('data-toggle','pill');
+            a.setAttribute('href','#'+step);
+            a.innerHTML = data[step].step_num;
+            li.appendChild(a);
+            navhtml.appendChild(li);
+        };
+
     }
 
 };
