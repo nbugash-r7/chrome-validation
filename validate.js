@@ -6,7 +6,7 @@
 var attackRequestTemplate =
     "<div class='form-group'>"+
     "<label>Attack Request</label>" +
-    "<textarea rows='5' class='form-control'>{{attack_request_header}}</textarea>" +
+    "<textarea rows='5' id='attack-request-headers' class='form-control'>{{attack_request_header}}</textarea>" +
     "</div>";
 
 var viewTemplate =
@@ -44,7 +44,7 @@ var headerButtonsTemplate =
     "<button type='button' class='btn btn-default'>Proxy</button>" +
     "<button type='button' class='btn btn-default'>Edit Cookie</button>" +
     "<button type='button' class='btn btn-default'>Reset Request</button>" +
-    "<button type='button' class='btn btn-default'>Send Request</button>" +
+    "<button type='button' class='btn btn-default' onclick=\"AppSpiderValidate.makeRequest($('textarea#attack-request-headers').val())\">Send Request</button>" +
     "<button type='button' class='btn btn-default'>Compare</button>" +
     "</div>" +
     "</div>" +
@@ -96,11 +96,10 @@ var AppSpiderValidate = {
                 var request = array[0].trim();
                 var desc = array[array.length -1].trim();
                 /* Debugging */
-                step['step' + step_num] = {
+                data['step' + step_num] = {
                     step_num: "Step " + step_num,
-                    attack_request_header: AppSpiderValidate.parseRequest(request)
+                    attack_request_header: request
                 };
-                data[step];
                 step_num++;
             }
         }
@@ -108,14 +107,55 @@ var AppSpiderValidate = {
     },
 
     makeRequest: function(request) {
-        var headers = request.split("\n");
-        headers;
+        var headers = AppSpiderValidate.parseRequest(request);
+        AppSpiderValidate.sendRequest(headers);
     },
 
-    /* For Debugging purposes only */
-    parseRequest: function(request) {
-        var headers = request.split("\n");
+    /* Private */
+    parseRequest: function(unparse_request) {
+        var array = unparse_request.split("\n");
+        var headers = {}
+        for (var i = 0; i < array.length; i++) {
+            var header = array[i];
+            if (header.match(/GET|POST/)) {
+                headers['Initial-Request-Line'] = header;
+            } else if (header.indexOf(':') > -1) {
+                var a = header.split(':');
+                headers[a[0].trim()] = a[a.length -1].trim();
+            }
+        }
         return headers
+    },
+
+    /* Private */
+    sendRequest: function(headers) {
+        var xmlHTTP = new XMLHttpRequest();
+        xmlHTTP.onreadystatechange = function() {
+            if (xmlHTTP.readyState == 4 && xmlHTTP.status == 200) {
+                callback(xmlHTTP.responseText);
+            }
+        };
+        var method = "";
+        var url = "";
+        var http_version = "";
+
+        var a = headers['Initial-Request-Line'].split(' ');
+        if (a.length == 3) {
+            method = a[0];
+            url = a[1];
+            http_version = a[2];
+            if (!url.match(/http|https/i)){
+                url = headers['host'] + url;
+            }
+        }
+        xmlHTTP.open(method, url, true); // true for asynchronous
+
+        for (var header in headers) {
+            if (header != 'Initial-Request-Line') {
+                xmlHTTP.setRequestHeader(header,headers[header]);
+            }
+        }
+        xmlHTTP;
     },
 
     hidePage: function(pageId) {
@@ -145,6 +185,7 @@ var AppSpiderValidate = {
             stephtml.appendChild(div);
         };
     },
+
     renderNavTemplate: function(data) {
         var navhtml = document.getElementById('appspider-nav');
         for (var step in data) {
