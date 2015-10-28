@@ -86,23 +86,25 @@ var AppSpiderValidate = {
     },
 
     parseHeader: function(requests) {
-        var header = [];
-        var arry_requests = requests.split(/(#H#G#F#E#D#C#B#A#)/);
-        for (var i = 0; i < arry_requests.length + 1; i++ ) {
+        var data = {};
+        var step_num = 1;
+        var array_request = requests.split(/(#H#G#F#E#D#C#B#A#)/);
+        for (var i = 0; i < array_request.length; i++ ) {
             var step = {};
-            if (arry_requests[i].indexOf("#A#B#C#D#E#F#G#H#") > -1) {
-                var arry = arry_requests[i].split(/(#A#B#C#D#E#F#G#H#)/);
-                var request = arry[0].trim();
-                var desc = arry[arry.length -1].trim();
+            if (array_request[i].indexOf("#A#B#C#D#E#F#G#H#") > -1) {
+                var array = array_request[i].split(/(#A#B#C#D#E#F#G#H#)/);
+                var request = array[0].trim();
+                var desc = array[array.length -1].trim();
                 /* Debugging */
-                var step_num = i + 1;
                 step['step' + step_num] = {
                     step_num: "Step " + step_num,
                     attack_request_header: AppSpiderValidate.parseRequest(request)
                 };
-                header.push(step)
+                data[step];
+                step_num++;
             }
         }
+        return data;
     },
 
     makeRequest: function(request) {
